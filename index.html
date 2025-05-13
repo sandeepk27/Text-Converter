@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Case Converter</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    textarea {
+      width: 90%;
+      max-width: 800px;
+      height: 200px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      resize: vertical;
+      background: #fff;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 600px) {
+      textarea {
+        height: 150px;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Text Case Converter</h1>
+
+  <textarea id="textInput" placeholder="Type or paste your text here..."></textarea>
+
+  <div class="button-group">
+    <button onclick="convertCase('upper')">UPPERCASE</button>
+    <button onclick="convertCase('lower')">lowercase</button>
+    <button onclick="convertCase('title')">Title Case</button>
+    <button onclick="convertCase('sentence')">Sentence case</button>
+    <button onclick="convertCase('camel')">camelCase</button>
+    <button onclick="convertCase('alternating')">aLtErNaTiNg cAsE</button>
+    <button onclick="convertCase('inverse')">InVeRsE CaSe</button>
+    <button onclick="downloadText()">Download Text</button>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    <button onclick="clearText()">Clear</button>
+  </div>
+
+  <script>
+    function convertCase(type) {
+      const textArea = document.getElementById('textInput');
+      let text = textArea.value;
+
+      switch (type) {
+        case 'upper':
+          textArea.value = text.toUpperCase();
+          break;
+        case 'lower':
+          textArea.value = text.toLowerCase();
+          break;
+        case 'title':
+          textArea.value = text.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+          break;
+        case 'sentence':
+          textArea.value = text.toLowerCase().replace(/(^\s*\w|[\.\!\?]\s*\w)/g, c => c.toUpperCase());
+          break;
+        case 'camel':
+          textArea.value = text
+            .toLowerCase()
+            .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase());
+          break;
+        case 'alternating':
+          textArea.value = [...text].map((char, i) =>
+            i % 2 === 0 ? char.toLowerCase() : char.toUpperCase()).join('');
+          break;
+        case 'inverse':
+          textArea.value = [...text].map(char =>
+            char === char.toLowerCase() ? char.toUpperCase() : char.toLowerCase()).join('');
+          break;
+      }
+    }
+
+    function copyToClipboard() {
+      const textArea = document.getElementById('textInput');
+      navigator.clipboard.writeText(textArea.value)
+        .then(() => alert("Copied to clipboard!"))
+        .catch(err => alert("Failed to copy: " + err));
+    }
+
+    function downloadText() {
+      const text = document.getElementById('textInput').value;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "converted_text.txt";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearText() {
+      document.getElementById('textInput').value = '';
+    }
+  </script>
+</body>
+</html>
